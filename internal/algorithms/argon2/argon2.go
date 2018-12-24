@@ -12,15 +12,17 @@ import (
 	"golang.org/x/crypto/argon2"
 )
 
+//TODO need huge refactoring
+
 type Argon2 struct{}
 
-func (Argon2) DoHash(pswd string) (pswdHash string, err error) {
-	pswdHash, err = generateFromPassword(pswd, p)
+func (Argon2) DoHash(pswd string) (pswdHash string) {
+	pswdHash, err := generateFromPassword(pswd, p)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return pswdHash, nil
+	return pswdHash
 }
 
 func (Argon2) CheckHash(pswd, hash string) (result bool) {
@@ -31,6 +33,8 @@ func (Argon2) CheckHash(pswd, hash string) (result bool) {
 	}
 	return true
 }
+
+//TODO move it to separate package
 
 var (
 	ErrInvalidHash         = errors.New("the encoded hash is not in the correct format")

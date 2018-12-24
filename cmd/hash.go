@@ -3,7 +3,6 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -28,10 +27,6 @@ func strToHash(algo algorithms.Algorithm) {
 	fmt.Println("Enter password to hash:")
 	password, _ := reader.ReadString('\n')
 
-	hash, err := algo.DoHash(password)
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	hash := algo.DoHash(password)
 	fmt.Println(hash)
 }

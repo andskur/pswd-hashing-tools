@@ -9,14 +9,14 @@ import (
 
 type Bcrypt struct{}
 
-func (Bcrypt) DoHash(pswd string) (pswdHash string, err error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(pswd), bcrypt.DefaultCost)
+func (Bcrypt) DoHash(pswd string) (pswdHash string) {
+	byteHash, err := bcrypt.GenerateFromPassword([]byte(pswd), bcrypt.DefaultCost)
 	if err != nil {
 		log.Fatal(err)
 	}
-	pswdHash = string(bytes)
+	pswdHash = string(byteHash)
 
-	return pswdHash, nil
+	return pswdHash
 }
 
 func (Bcrypt) CheckHash(pswd, hash string) (result bool) {
