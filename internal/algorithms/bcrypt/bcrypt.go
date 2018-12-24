@@ -2,8 +2,9 @@ package bcrypt
 
 import (
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
 	"log"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Bcrypt struct{}
