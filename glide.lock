@@ -1,5 +1,5 @@
-hash: e1065e217654941794ce92c3c439bf3c87c64151a570c71c275a74200a633c9c
-updated: 2018-12-24T13:59:43.782294+03:00
+hash: 0fe3338f3169248fd71b9d1670fd07972b55c667267d4a456b492349a5692c8b
+updated: 2018-12-24T18:17:40.701983+03:00
 imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
@@ -10,6 +10,12 @@ imports:
 - name: golang.org/x/crypto
   version: eb0de9b17e854e9b1ccd9963efafc79862359959
   subpackages:
+  - argon2
   - bcrypt
+  - blake2b
   - blowfish
+- name: golang.org/x/sys
+  version: 4ed8d59d0b35e1e29334a206d1b3f38b1e5dfb31
+  subpackages:
+  - cpu
 testImports: []
