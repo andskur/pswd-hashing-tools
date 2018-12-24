@@ -1,6 +1,8 @@
-hash: 0fe3338f3169248fd71b9d1670fd07972b55c667267d4a456b492349a5692c8b
-updated: 2018-12-24T18:17:40.701983+03:00
+hash: 1dc283a09b399333b9fa3007ba42883bf82c3a121aea05473afb65ca3bf63685
+updated: 2018-12-24T19:38:38.469495+03:00
 imports:
+- name: github.com/elithrar/simple-scrypt
+  version: d150773194090feb6c897805a7bcea8d49544e2c
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/spf13/cobra

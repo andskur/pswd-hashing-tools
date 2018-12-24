@@ -10,6 +10,7 @@ import (
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms"
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms/argon2"
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms/bcrypt"
+	"github.com/andskur/pswd-hashing-tools/internal/algorithms/scrypt"
 )
 
 var (
@@ -28,6 +29,8 @@ var rootCmd = &cobra.Command{
 			algo = &argon2.Argon2{}
 		case "bcrypt":
 			algo = &bcrypt.Bcrypt{}
+		case "scrypt":
+			algo = &scrypt.Scrypt{}
 		default:
 			algo = &bcrypt.Bcrypt{}
 		}
