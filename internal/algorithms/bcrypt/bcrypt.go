@@ -2,28 +2,27 @@ package bcrypt
 
 import (
 	"fmt"
-	algo "golang.org/x/crypto/bcrypt"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 )
 
 type Bcrypt struct{}
 
-func (*Bcrypt) DoHash(pswd string) (pswdHash string, err error) {
-	bytes, err := algo.GenerateFromPassword([]byte(pswd), algo.DefaultCost)
+func (Bcrypt) DoHash(pswd string) (pswdHash string, err error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(pswd), bcrypt.DefaultCost)
 	if err != nil {
 		log.Fatal(err)
 	}
 	pswdHash = string(bytes)
 
-	return
+	return pswdHash, nil
 }
 
-func (*Bcrypt) CheckHash(pswd, hash string) (result bool) {
-	err := algo.CompareHashAndPassword([]byte(hash), []byte(pswd))
+func (Bcrypt) CheckHash(pswd, hash string) (result bool) {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(pswd))
 	if err != nil {
 		fmt.Println(err)
 		return false
 	}
-
 	return true
 }

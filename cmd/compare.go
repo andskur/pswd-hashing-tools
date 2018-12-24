@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/andskur/pswd-hashing-tools/internal/algorithms/bcrypt"
+	"github.com/andskur/pswd-hashing-tools/internal/algorithms"
 )
 
 func init() {
@@ -22,7 +22,7 @@ var compareCmd = &cobra.Command{
 	},
 }
 
-func compareStrHash(algo bcrypt.Bcrypt) {
+func compareStrHash(algo algorithms.Algorithm) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Enter password to compare:")
 	password, _ := reader.ReadString('\n')
