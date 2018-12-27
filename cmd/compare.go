@@ -15,20 +15,38 @@ func init() {
 }
 
 var compareCmd = &cobra.Command{
-	Use:   "compare",
-	Short: "Compare string with a hash",
+	Use:       "compare [password] ['hash']",
+	Short:     "Compare string with a hash",
+	ValidArgs: []string{"password", "hash"},
+	Args:      cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		compareStrHash(algo)
+		var password, hash string
+		if len(args) > 0 {
+			password = args[0]
+			if len(args) == 2 {
+				hash = args[1]
+			}
+		}
+
+		fmt.Println(args)
+		fmt.Println(hash)
+
+		compareStrHash(algo, password, hash)
 	},
 }
 
-func compareStrHash(algo algorithms.Algorithm) {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Enter password to compare:")
-	password, _ := reader.ReadString('\n')
-
-	fmt.Println("Enter hash to compare:")
-	hash, _ := reader.ReadString('\n')
+func compareStrHash(algo algorithms.Algorithm, password, hash string) {
+	if password == "" || hash == "" {
+		reader := bufio.NewReader(os.Stdin)
+		if password == "" {
+			fmt.Println("Enter password to compare:")
+			password, _ = reader.ReadString('\n')
+		}
+		if hash == "" {
+			fmt.Println("Enter hash to compare:")
+			hash, _ = reader.ReadString('\n')
+		}
+	}
 
 	result := algo.CheckHash(password, hash)
 

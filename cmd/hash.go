@@ -10,8 +10,6 @@ import (
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms"
 )
 
-var password string
-
 func init() {
 	rootCmd.AddCommand(hashCmd)
 }
@@ -22,6 +20,7 @@ var hashCmd = &cobra.Command{
 	ValidArgs: []string{"password"},
 	Args:      cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		var password string
 		if len(args) > 0 {
 			password = args[0]
 		}

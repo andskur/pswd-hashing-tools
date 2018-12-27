@@ -20,6 +20,10 @@ func (Bcrypt) DoHash(pswd string) (pswdHash string) {
 }
 
 func (Bcrypt) CheckHash(pswd, hash string) (result bool) {
+
+	fmt.Println(pswd)
+	fmt.Println(hash)
+
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(pswd))
 	if err != nil {
 		fmt.Println(err)
