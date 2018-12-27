@@ -13,14 +13,12 @@ func (Scrypt) DoHash(pswd string) (pswdHash string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(byteHash)
 	pswdHash = string(byteHash)
 
 	return pswdHash
 }
 
 func (Scrypt) CheckHash(pswd, hash string) (result bool) {
-	fmt.Println([]byte(hash))
 	err := scrypt.CompareHashAndPassword([]byte(hash), []byte(pswd))
 	if err != nil {
 		fmt.Println(err)
