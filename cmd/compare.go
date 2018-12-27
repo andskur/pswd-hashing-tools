@@ -27,10 +27,6 @@ var compareCmd = &cobra.Command{
 				hash = args[1]
 			}
 		}
-
-		fmt.Println(args)
-		fmt.Println(hash)
-
 		compareStrHash(algo, password, hash)
 	},
 }
