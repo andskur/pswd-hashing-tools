@@ -15,17 +15,26 @@ func init() {
 }
 
 var hashCmd = &cobra.Command{
-	Use:   "hash",
-	Short: "Hash given string with specific algorithm",
+	Use:       "hash [password]",
+	Short:     "Hash given string with specific algorithm",
+	ValidArgs: []string{"password"},
+	Args:      cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		strToHash(algo)
+		var password string
+		if len(args) > 0 {
+			password = args[0]
+		}
+		strToHash(algo, password)
 	},
 }
 
-func strToHash(algo algorithms.Algorithm) {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Enter password to hash:")
-	password, _ := reader.ReadString('\n')
+func strToHash(algo algorithms.Algorithm, password string) {
+
+	if password == "" {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Println("Enter password to hash:")
+		password, _ = reader.ReadString('\n')
+	}
 
 	hash := algo.DoHash(password)
 	fmt.Println(hash)
