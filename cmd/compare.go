@@ -14,6 +14,8 @@ func init() {
 	rootCmd.AddCommand(compareCmd)
 }
 
+// compareCmd can receive password and hash with command line argument
+// or u can leave arguments nil and type password later with stdin
 var compareCmd = &cobra.Command{
 	Use:       "compare [password] ['hash']",
 	Short:     "Compare string with a hash",
@@ -27,11 +29,13 @@ var compareCmd = &cobra.Command{
 				hash = args[1]
 			}
 		}
-		compareStrHash(algo, password, hash)
+		comparePswdHash(algo, password, hash)
 	},
 }
 
-func compareStrHash(algo algorithms.Algorithm, password, hash string) {
+// comparePswdHash compare matching with given password and hash
+func comparePswdHash(algo algorithms.Algorithm, password, hash string) {
+	// Ask user for type password and/or hash if we don't receive it with command line argument
 	if password == "" || hash == "" {
 		reader := bufio.NewReader(os.Stdin)
 		if password == "" {

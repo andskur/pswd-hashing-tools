@@ -14,6 +14,8 @@ func init() {
 	rootCmd.AddCommand(hashCmd)
 }
 
+// hashCmd can receive password to hash with command line argument
+// or u can leave argument nil and type password later with stdin
 var hashCmd = &cobra.Command{
 	Use:       "hash [password]",
 	Short:     "Hash given string with specific algorithm",
@@ -28,8 +30,10 @@ var hashCmd = &cobra.Command{
 	},
 }
 
+// strToHash hash given password string with specific algorithm
 func strToHash(algo algorithms.Algorithm, password string) {
 
+	// Ask user for type password if we don't receive it with command line argument
 	if password == "" {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Println("Enter password to hash:")

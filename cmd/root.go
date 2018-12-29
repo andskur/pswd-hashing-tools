@@ -20,9 +20,10 @@ var (
 
 //TODO add viper package for bindings command line flags to config
 
+// rootCmd is a root command with general "algorithm" command line flag
+// with which can set execute hashing algorithm
 var rootCmd = &cobra.Command{
 	Short: "Tools for hashing passwords and compare result with string",
-	Long:  ``,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		switch AlgoFlag {
 		case "argon2":
@@ -38,6 +39,7 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+// Execute root command and binding flags
 func Execute() {
 	rootCmd.PersistentFlags().StringVarP(&AlgoFlag, "algorithm", "a", "bcrypt", "Crypto algorithm to use")
 	if err := rootCmd.Execute(); err != nil {

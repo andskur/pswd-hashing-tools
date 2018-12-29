@@ -16,6 +16,7 @@ import (
 
 type Argon2 struct{}
 
+// DoHash hash given password string with argon2 algorithm
 func (Argon2) DoHash(pswd string) (pswdHash string) {
 	pswdHash, err := generateFromPassword(pswd, p)
 	if err != nil {
@@ -25,6 +26,7 @@ func (Argon2) DoHash(pswd string) (pswdHash string) {
 	return pswdHash
 }
 
+// CheckHash compare matching with given password and hash with argon2 algorithm
 func (Argon2) CheckHash(pswd, hash string) (result bool) {
 	err := comparePasswordAndHash(pswd, hash)
 	if err != nil {

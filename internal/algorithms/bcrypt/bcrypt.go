@@ -9,6 +9,7 @@ import (
 
 type Bcrypt struct{}
 
+// DoHash hash given password string with bcrypt algorithm
 func (Bcrypt) DoHash(pswd string) (pswdHash string) {
 	byteHash, err := bcrypt.GenerateFromPassword([]byte(pswd), bcrypt.DefaultCost)
 	if err != nil {
@@ -19,6 +20,7 @@ func (Bcrypt) DoHash(pswd string) (pswdHash string) {
 	return pswdHash
 }
 
+// CheckHash compare matching with given password and hash with bcrypt algorithm
 func (Bcrypt) CheckHash(pswd, hash string) (result bool) {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(pswd))
 	if err != nil {
