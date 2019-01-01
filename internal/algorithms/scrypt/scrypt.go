@@ -6,6 +6,7 @@ import (
 	"log"
 )
 
+// Scrypt implements password hashing algorithm interface
 type Scrypt struct{}
 
 // DoHash hash given password string with scrypt algorithm

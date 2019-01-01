@@ -55,14 +55,14 @@ func Execute() {
 
 // BindArgument binding argument dor use in next command iteration
 // from user stdin or command line argument
-func BindArgument(check string, arguments map[string]string) (argument string) {
+func BindArgument(check string, arguments map[string]string, cmd string) (argument string) {
 	argument, exist := arguments[check]
 
 	// Ask user for type argument if we don't receive it with command line
 	if !exist {
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Println("Enter password to compare:")
+		fmt.Printf("Enter %s for %s:\n", check, cmd)
 		argument, _ = reader.ReadString('\n')
 	}
-	return
+	return argument
 }

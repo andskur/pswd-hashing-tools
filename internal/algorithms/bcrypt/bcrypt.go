@@ -7,6 +7,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Bcrypt implements password hashing algorithm interface
 type Bcrypt struct{}
 
 // DoHash hash given password string with bcrypt algorithm

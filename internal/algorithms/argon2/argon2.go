@@ -14,6 +14,7 @@ import (
 
 //TODO need huge refactoring
 
+// Argon2 implements password hashing algorithm interface
 type Argon2 struct{}
 
 // DoHash hash given password string with argon2 algorithm

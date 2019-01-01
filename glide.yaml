@@ -1,4 +1,9 @@
 package: github.com/andskur/pswd-hashing-tools
+homepage: https://github.com/andskur/pswd-hashing-tools
+license: MIT
+owners:
+  - name: Andrew Skurlatov
+    email: a.skurlatov@gmail.com
 import:
 - package: golang.org/x/crypto
   subpackages:

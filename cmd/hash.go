@@ -2,9 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
-
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms"
+	"github.com/spf13/cobra"
 )
 
 func init() {
@@ -28,7 +27,7 @@ var hashCmd = &cobra.Command{
 
 // strToHash hash given password string with specific algorithm
 func strToHash(algo algorithms.Algorithm, args map[string]string) {
-	password := BindArgument("password", args)
+	password := BindArgument("password", args, "hash")
 	hash := algo.DoHash(password)
 
 	fmt.Println(hash)

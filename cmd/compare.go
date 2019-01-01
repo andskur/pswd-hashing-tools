@@ -2,9 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
-
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms"
+	"github.com/spf13/cobra"
 )
 
 func init() {
@@ -31,8 +30,8 @@ var compareCmd = &cobra.Command{
 
 // comparePswdHash compare matching with given password and hash
 func comparePswdHash(algo algorithms.Algorithm, args map[string]string) {
-	password := BindArgument("password", args)
-	hash := BindArgument("hash", args)
+	password := BindArgument("password", args, "compare")
+	hash := BindArgument("hash", args, "compare")
 	result := algo.CheckHash(password, hash)
 
 	switch result {
