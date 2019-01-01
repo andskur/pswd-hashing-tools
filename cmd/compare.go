@@ -54,6 +54,6 @@ func comparePswdHash(algo algorithms.Algorithm, password, hash string) {
 	case true:
 		fmt.Println("Hash and password are matching")
 	case false:
-		fmt.Println("Hash and password are't matching")
+		fmt.Println("Hash and password aren't matching")
 	}
 }
