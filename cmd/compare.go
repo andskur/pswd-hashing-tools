@@ -1,10 +1,7 @@
 package cmd
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
 
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms"
@@ -22,32 +19,20 @@ var compareCmd = &cobra.Command{
 	ValidArgs: []string{"password", "hash"},
 	Args:      cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		var password, hash string
 		if len(args) > 0 {
-			password = args[0]
+			Arguments["password"] = args[0]
 			if len(args) == 2 {
-				hash = args[1]
+				Arguments["hash"] = args[1]
 			}
 		}
-		comparePswdHash(algo, password, hash)
+		comparePswdHash(algo, Arguments)
 	},
 }
 
 // comparePswdHash compare matching with given password and hash
-func comparePswdHash(algo algorithms.Algorithm, password, hash string) {
-	// Ask user for type password and/or hash if we don't receive it with command line argument
-	if password == "" || hash == "" {
-		reader := bufio.NewReader(os.Stdin)
-		if password == "" {
-			fmt.Println("Enter password to compare:")
-			password, _ = reader.ReadString('\n')
-		}
-		if hash == "" {
-			fmt.Println("Enter hash to compare:")
-			hash, _ = reader.ReadString('\n')
-		}
-	}
-
+func comparePswdHash(algo algorithms.Algorithm, args map[string]string) {
+	password := BindArgument("password", args)
+	hash := BindArgument("hash", args)
 	result := algo.CheckHash(password, hash)
 
 	switch result {

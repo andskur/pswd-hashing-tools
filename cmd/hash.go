@@ -1,10 +1,7 @@
 package cmd
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
 
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms"
@@ -22,24 +19,17 @@ var hashCmd = &cobra.Command{
 	ValidArgs: []string{"password"},
 	Args:      cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		var password string
 		if len(args) > 0 {
-			password = args[0]
+			Arguments["password"] = args[0]
 		}
-		strToHash(algo, password)
+		strToHash(algo, Arguments)
 	},
 }
 
 // strToHash hash given password string with specific algorithm
-func strToHash(algo algorithms.Algorithm, password string) {
-
-	// Ask user for type password if we don't receive it with command line argument
-	if password == "" {
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Println("Enter password to hash:")
-		password, _ = reader.ReadString('\n')
-	}
-
+func strToHash(algo algorithms.Algorithm, args map[string]string) {
+	password := BindArgument("password", args)
 	hash := algo.DoHash(password)
+
 	fmt.Println(hash)
 }

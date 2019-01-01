@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -13,10 +15,14 @@ import (
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms/scrypt"
 )
 
+// Algorithm flag vars
 var (
 	AlgoFlag string
 	algo     algorithms.Algorithm
 )
+
+// Arguments fot interacting with commands
+var Arguments = make(map[string]string, 2)
 
 //TODO add viper package for bindings command line flags to config
 
@@ -45,4 +51,18 @@ func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// BindArgument binding argument dor use in next command iteration
+// from user stdin or command line argument
+func BindArgument(check string, arguments map[string]string) (argument string) {
+	argument, exist := arguments[check]
+
+	// Ask user for type argument if we don't receive it with command line
+	if !exist {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Println("Enter password to compare:")
+		argument, _ = reader.ReadString('\n')
+	}
+	return
 }
