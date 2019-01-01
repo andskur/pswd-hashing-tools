@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/andskur/pswd-hashing-tools/internal/algorithms"
 	"github.com/spf13/cobra"
+
+	"github.com/andskur/pswd-hashing-tools/internal/algorithms"
 )
 
 func init() {
