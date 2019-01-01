@@ -1,5 +1,5 @@
-hash: 1dc283a09b399333b9fa3007ba42883bf82c3a121aea05473afb65ca3bf63685
-updated: 2018-12-24T19:38:38.469495+03:00
+hash: 19d34c39ead394aa633d570badf0f9c420148a1f0ba7b1cb42b26e7cba0bab1b
+updated: 2019-01-02T01:57:15.317125+03:00
 imports:
 - name: github.com/elithrar/simple-scrypt
   version: d150773194090feb6c897805a7bcea8d49544e2c
@@ -16,6 +16,8 @@ imports:
   - bcrypt
   - blake2b
   - blowfish
+  - pbkdf2
+  - scrypt
 - name: golang.org/x/sys
   version: 4ed8d59d0b35e1e29334a206d1b3f38b1e5dfb31
   subpackages:
