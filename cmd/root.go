@@ -26,6 +26,8 @@ var Arguments = make(map[string]string, 2)
 
 //TODO add viper package for bindings command line flags to config
 
+//TODO improve help command with actual documentation
+
 // rootCmd is a root command with general "algorithm" command line flag
 // with which can set execute hashing algorithm
 var rootCmd = &cobra.Command{

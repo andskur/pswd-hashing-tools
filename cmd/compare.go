@@ -15,7 +15,7 @@ func init() {
 // or u can leave arguments nil and type password later with stdin
 var compareCmd = &cobra.Command{
 	Use:       "compare [password] ['hash']",
-	Short:     "Compare string with a hash",
+	Short:     "Compare given string with a given hash",
 	ValidArgs: []string{"password", "hash"},
 	Args:      cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
