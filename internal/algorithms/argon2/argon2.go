@@ -19,12 +19,11 @@ type Argon2 struct{}
 
 // DoHash hash given password string with argon2 algorithm
 func (Argon2) DoHash(pswd string) (pswdHash string) {
-	pswdHash, err := generateFromPassword(pswd, p)
+	byteHash, err := generateFromPassword([]byte(pswd), DefaultParams)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	return pswdHash
+	return string(byteHash)
 }
 
 // CheckHash compare matching with given password and hash with argon2 algorithm
@@ -46,14 +45,15 @@ var (
 )
 
 type params struct {
-	memory      uint32
-	iterations  uint32
-	parallelism uint8
-	saltLength  uint32
-	keyLength   uint32
+	memory      uint32 // The amount of memory used by the algorithm (kibibytes)
+	iterations  uint32 // The number of iterations (passes) over the memory.
+	parallelism uint8  // The number of threads (lanes) used by the algorithm.
+	saltLength  uint32 // Length of the random salt. 16 bytes is recommended for password hashing.
+	keyLength   uint32 // Length of the generated key (password hash). 16 bytes or more is recommended.
 }
 
-var p = &params{
+// Default parameters
+var DefaultParams = &params{
 	memory:      64 * 1024,
 	iterations:  3,
 	parallelism: 2,
@@ -61,20 +61,26 @@ var p = &params{
 	keyLength:   32,
 }
 
-func generateFromPassword(password string, p *params) (encodedHash string, err error) {
+func generateFromPassword(password []byte, p *params) ([]byte, error) {
+	// Generate a cryptographically secure random salt
 	salt, err := generateRandomBytes(p.saltLength)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	hash := argon2.IDKey([]byte(password), salt, p.iterations, p.memory, p.parallelism, p.keyLength)
+	// Pass the byte array password, salt and parameters to the argon2.IDKey
+	// function. This will generate a hash of the password using the Argon2id
+	// variant.
+	key := argon2.IDKey(password, salt, p.iterations, p.memory, p.parallelism, p.keyLength)
 
-	b64Salt := base64.RawStdEncoding.EncodeToString(salt)
-	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
+	return []byte(fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%x$%x", argon2.Version, p.memory, p.iterations, p.parallelism, salt, key)), nil
 
-	encodedHash = fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, p.memory, p.iterations, p.parallelism, b64Salt, b64Hash)
+	//b64Salt := base64.RawStdEncoding.EncodeToString(salt)
+	//b64Hash := base64.RawStdEncoding.EncodeToString(hash)
 
-	return encodedHash, nil
+	//encodedHash = fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, p.memory, p.iterations, p.parallelism, salt, key)
+
+	//return encodedHash, nil
 }
 
 func generateRandomBytes(n uint32) ([]byte, error) {

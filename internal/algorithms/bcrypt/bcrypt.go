@@ -16,9 +16,7 @@ func (Bcrypt) DoHash(pswd string) (pswdHash string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	pswdHash = string(byteHash)
-
-	return pswdHash
+	return string(byteHash)
 }
 
 // CheckHash compare matching with given password and hash with bcrypt algorithm
