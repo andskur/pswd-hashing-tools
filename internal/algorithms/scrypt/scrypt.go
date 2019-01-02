@@ -1,9 +1,9 @@
 package scrypt
 
 import (
-	"fmt"
-	"github.com/elithrar/simple-scrypt"
 	"log"
+
+	"github.com/elithrar/simple-scrypt"
 )
 
 // Scrypt implements password hashing algorithm interface
@@ -19,10 +19,9 @@ func (Scrypt) DoHash(pswd string) (pswdHash string) {
 }
 
 // CheckHash compare matching with given password and hash with scrypt algorithm
-func (Scrypt) CheckHash(pswd, hash string) (result bool) {
+func (Scrypt) CheckHash(pswd, hash string) bool {
 	err := scrypt.CompareHashAndPassword([]byte(hash), []byte(pswd))
 	if err != nil {
-		fmt.Println(err)
 		return false
 	}
 	return true

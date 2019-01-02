@@ -1,7 +1,6 @@
 package bcrypt
 
 import (
-	"fmt"
 	"log"
 
 	"golang.org/x/crypto/bcrypt"
@@ -20,10 +19,9 @@ func (Bcrypt) DoHash(pswd string) (pswdHash string) {
 }
 
 // CheckHash compare matching with given password and hash with bcrypt algorithm
-func (Bcrypt) CheckHash(pswd, hash string) (result bool) {
+func (Bcrypt) CheckHash(pswd, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(pswd))
 	if err != nil {
-		fmt.Println(err)
 		return false
 	}
 	return true

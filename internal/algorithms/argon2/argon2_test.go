@@ -2,6 +2,8 @@ package argon2
 
 import (
 	"testing"
+
+	"github.com/andskur/argon2-hashing"
 )
 
 const (
@@ -19,7 +21,7 @@ func TestScrypt_CheckHash(t *testing.T) {
 
 func TestScrypt_DoHash(t *testing.T) {
 	hash := alg.DoHash(password)
-	err := CompareHashAndPassword([]byte(hash), []byte(password))
+	err := argon2.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err != nil {
 		t.Errorf("Calculated hash not matching with given string")
 	}
