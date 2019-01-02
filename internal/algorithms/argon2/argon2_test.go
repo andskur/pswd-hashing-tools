@@ -6,7 +6,7 @@ import (
 
 const (
 	password = "qwerty123"
-	hash     = "$argon2id$v=19$m=65536,t=3,p=2$d30dba4ef06d46b2706cf4753352c7b7$f52bc6a0cd02d90c29e24db31e8cf7bd67c761726a8679f86b0a4103c923d973"
+	hash     = "argon2id$19$65536$3$2$T8wT/pIJDqo/UrVHXXS8Ag$vaC5FaJRoVAnkxXcQCVnmeJ4lLp5Mp3NKRqDfXDcVv8"
 )
 
 var alg = &Argon2{}

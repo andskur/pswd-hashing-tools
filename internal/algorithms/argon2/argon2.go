@@ -7,12 +7,11 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 
 	"golang.org/x/crypto/argon2"
 )
-
-//TODO need huge refactoring
 
 // Argon2 implements password hashing algorithm interface
 type Argon2 struct{}
@@ -20,7 +19,6 @@ type Argon2 struct{}
 // DoHash hash given password string with argon2 algorithm
 func (Argon2) DoHash(pswd string) (pswdHash string) {
 	byteHash, err := GenerateFromPassword([]byte(pswd), DefaultParams)
-	//fmt.Println(byteHash)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,10 +27,8 @@ func (Argon2) DoHash(pswd string) (pswdHash string) {
 
 // CheckHash compare matching with given password and hash with argon2 algorithm
 func (Argon2) CheckHash(pswd, hash string) (result bool) {
-	//fmt.Println([]byte(hash))
 	err := CompareHashAndPassword([]byte(hash), []byte(pswd))
 	if err != nil {
-		//fmt.Println(err)
 		return false
 	}
 	return true
@@ -46,43 +42,44 @@ var (
 	PasswordNotMatch       = errors.New("passwords not match")
 )
 
-type params struct {
-	memory      uint32 // The amount of memory used by the algorithm (kibibytes)
-	iterations  uint32 // The number of iterations (passes) over the memory.
-	parallelism uint8  // The number of threads (lanes) used by the algorithm.
-	saltLength  uint32 // Length of the random salt. 16 bytes is recommended for password hashing.
-	keyLength   uint32 // Length of the generated key (password hash). 16 bytes or more is recommended.
+// Params describes the input parameters to the argon2 key derivation function
+type Params struct {
+	Memory      uint32 // The amount of memory used by the algorithm (kibibytes)
+	Iterations  uint32 // The number of iterations (passes) over the memory.
+	Parallelism uint8  // The number of threads (lanes) used by the algorithm.
+	SaltLength  uint32 // Length of the random salt. 16 bytes is recommended for password hashing.
+	KeyLength   uint32 // Length of the generated key (password hash). 16 bytes or more is recommended.
 }
 
-// Default parameters
-var DefaultParams = &params{
-	memory:      64 * 1024,
-	iterations:  3,
-	parallelism: 2,
-	saltLength:  16,
-	keyLength:   32,
+// DefaultParams provides sensible default inputs into the scrypt function for interactive use.
+// The default key length is 256 bits.
+var DefaultParams = &Params{
+	Memory:      64 * 1024,
+	Iterations:  3,
+	Parallelism: 2,
+	SaltLength:  16,
+	KeyLength:   32,
 }
 
-func GenerateFromPassword(password []byte, p *params) ([]byte, error) {
+// GenerateFromPassword returns the derived key of the password using the
+// parameters provided. The parameters are prepended to the derived key and
+// separated by the "$" character
+func GenerateFromPassword(password []byte, p *Params) ([]byte, error) {
 	// Generate a cryptographically secure random salt
-	salt, err := GenerateRandomBytes(p.saltLength)
+	salt, err := GenerateRandomBytes(p.SaltLength)
 	if err != nil {
 		return nil, err
 	}
 
 	// Pass the byte array password, salt and parameters to the argon2.IDKey
-	// function. This will generate a hash of the password using the Argon2id
-	// variant.
-	key := argon2.IDKey(password, salt, p.iterations, p.memory, p.parallelism, p.keyLength)
+	// function. This will generate a hash of the password using the Argon2id variation.
+	key := argon2.IDKey(password, salt, p.Iterations, p.Memory, p.Parallelism, p.KeyLength)
 
-	return []byte(fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%x$%x", argon2.Version, p.memory, p.iterations, p.parallelism, salt, key)), nil
+	// Encode salt and hashed password to Base64
+	b64Salt := base64.RawStdEncoding.EncodeToString(salt)
+	b64Hash := base64.RawStdEncoding.EncodeToString(key)
 
-	//b64Salt := base64.RawStdEncoding.EncodeToString(salt)
-	//b64Hash := base64.RawStdEncoding.EncodeToString(hash)
-
-	//encodedHash = fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, p.memory, p.iterations, p.parallelism, salt, key)
-
-	//return encodedHash, nil
+	return []byte(fmt.Sprintf("argon2id$%d$%d$%d$%d$%s$%s", argon2.Version, p.Memory, p.Iterations, p.Parallelism, b64Salt, b64Hash)), nil
 }
 
 // GenerateRandomBytes returns securely generated random bytes.
@@ -99,58 +96,75 @@ func GenerateRandomBytes(n uint32) ([]byte, error) {
 	return b, nil
 }
 
+// CompareHashAndPassword compares a derived key with the possible cleartext
+// equivalent. The parameters used in the provided derived key are used.
+// The comparison performed by this function is constant-time. It returns nil
+// on success, and an error if the derived keys do not match.
 func CompareHashAndPassword(hash, password []byte) error {
 	p, salt, hash, err := decodeHash(hash)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%x\n", hash)
 
-	otherHash := argon2.IDKey([]byte(password), salt, p.iterations, p.memory, p.parallelism, p.keyLength)
-	fmt.Printf("%x\n", otherHash)
+	otherHash := argon2.IDKey([]byte(password), salt, p.Iterations, p.Memory, p.Parallelism, p.KeyLength)
 
 	// Check that the contents of the hashed passwords are identical. Note
 	// that we are using the subtle.ConstantTimeCompare() function for this
 	// to help prevent timing attacks.
-	if subtle.ConstantTimeCompare(hash, otherHash) != 1 {
-		return PasswordNotMatch
+	if subtle.ConstantTimeCompare(hash, otherHash) == 1 {
+		return nil
 	}
-	return nil
+	return PasswordNotMatch
 }
 
-func decodeHash(hash []byte) (*params, []byte, []byte, error) {
-	vals := strings.Split(string(hash), "$")
-	if len(vals) != 6 {
+func decodeHash(encodedHash []byte) (p *Params, salt, hash []byte, err error) {
+	vals := strings.Split(string(encodedHash), "$")
+
+	if len(vals) != 7 {
 		return nil, nil, nil, ErrInvalidHash
 	}
 
-	var version int
-	_, err := fmt.Sscanf(vals[2], "v=%d", &version)
+	// Check argon2 version
+	version, err := strconv.Atoi(vals[1])
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, ErrInvalidHash
 	}
 	if version != argon2.Version {
 		return nil, nil, nil, ErrIncompatibleVersion
 	}
-	fmt.Println(version)
 
-	Params := &params{}
-	_, err = fmt.Sscanf(vals[3], "m=%d,t=%d,p=%d", &Params.memory, &Params.iterations, &Params.parallelism)
+	// Parsing parameters
+	p = &Params{}
+
+	memory, err := strconv.Atoi(vals[2])
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, ErrInvalidHash
 	}
+	p.Memory = uint32(memory)
 
-	salt, err := base64.RawStdEncoding.DecodeString(vals[4])
+	iterations, err := strconv.Atoi(vals[3])
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, ErrInvalidHash
 	}
-	Params.saltLength = uint32(len(salt))
+	p.Iterations = uint32(iterations)
 
-	hash, err = base64.RawStdEncoding.DecodeString(vals[5])
+	parallelism, err := strconv.Atoi(vals[4])
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, ErrInvalidHash
 	}
-	Params.keyLength = uint32(len(hash))
+	p.Parallelism = uint8(parallelism)
 
-	return Params, salt, hash, nil
+	salt, err = base64.RawStdEncoding.DecodeString(vals[5])
+	if err != nil {
+		return nil, nil, nil, ErrInvalidHash
+	}
+	p.SaltLength = uint32(len(salt))
+
+	hash, err = base64.RawStdEncoding.DecodeString(vals[6])
+	if err != nil {
+		return nil, nil, nil, ErrInvalidHash
+	}
+	p.KeyLength = uint32(len(hash))
+
+	return p, salt, hash, nil
 }
