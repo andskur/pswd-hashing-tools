@@ -117,6 +117,9 @@ func CompareHashAndPassword(hash, password []byte) error {
 	return PasswordNotMatch
 }
 
+// decodeHash extracts the parameters, salt and derived key from the
+// provided hash. It returns an error if the hash format is invalid and/or
+// the parameters are invalid.
 func decodeHash(encodedHash []byte) (p *Params, salt, hash []byte, err error) {
 	vals := strings.Split(string(encodedHash), "$")
 
