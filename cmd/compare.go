@@ -32,6 +32,11 @@ var compareCmd = &cobra.Command{
 // comparePswdHash compare matching with given password and hash
 func comparePswdHash(algo algorithms.Algorithm, args map[string]string) {
 	password := BindArgument("password", args, "compare")
+
+	if PreHashFlag {
+		password = Prehash(password)
+	}
+
 	hash := BindArgument("hash", args, "compare")
 	result := algo.CheckHash(password, hash)
 

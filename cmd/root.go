@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"bufio"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"log"
 	"os"
@@ -21,6 +23,9 @@ var (
 	algo     algorithms.Algorithm
 )
 
+// Prehash flag
+var PreHashFlag bool
+
 // Arguments fot interacting with commands
 var Arguments = make(map[string]string, 2)
 
@@ -34,8 +39,9 @@ var rootCmd = &cobra.Command{
 	Short: "Tools for hashing passwords and compare result with string",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 
-		//TODO need to add validator for "algorithm" command line argument
+		//TODO need to add validator for "algorithm" command line flag
 
+		// Get password hashing algorithm from command line flag
 		switch AlgoFlag {
 		case "argon2":
 			algo = &argon2.Argon2{}
@@ -55,6 +61,7 @@ var rootCmd = &cobra.Command{
 // Execute root command and binding flags
 func Execute() {
 	rootCmd.PersistentFlags().StringVarP(&AlgoFlag, "algorithm", "a", "bcrypt", "Crypto algorithm to use")
+	rootCmd.PersistentFlags().BoolVarP(&PreHashFlag, "prehash", "p", false, "Enable prehash SHA256 function")
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatal(err)
 	}
@@ -72,4 +79,13 @@ func BindArgument(check string, arguments map[string]string, cmd string) (argume
 		argument, _ = reader.ReadString('\n')
 	}
 	return argument
+}
+
+// Prehash given string with sha256
+func Prehash(string string) (hash string) {
+	fmt.Println("Prehashing password with SHA256...")
+	h := sha256.New()
+	h.Write([]byte(string))
+	sum := h.Sum(nil)
+	return hex.EncodeToString(sum)
 }

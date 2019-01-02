@@ -39,6 +39,7 @@ Password and hash arguments are optional, you can type it in stdin after command
 Flags:
   -a, --algorithm string   Crypto algorithm to use (default "bcrypt")
   -h, --help               help for this command
+  -p, --prehash            Enable prehash SHA256 function
   
 Available algorithms:
   bcrypt
