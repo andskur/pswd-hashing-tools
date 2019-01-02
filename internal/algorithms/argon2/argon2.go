@@ -19,7 +19,8 @@ type Argon2 struct{}
 
 // DoHash hash given password string with argon2 algorithm
 func (Argon2) DoHash(pswd string) (pswdHash string) {
-	byteHash, err := generateFromPassword([]byte(pswd), DefaultParams)
+	byteHash, err := GenerateFromPassword([]byte(pswd), DefaultParams)
+	//fmt.Println(byteHash)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -28,9 +29,10 @@ func (Argon2) DoHash(pswd string) (pswdHash string) {
 
 // CheckHash compare matching with given password and hash with argon2 algorithm
 func (Argon2) CheckHash(pswd, hash string) (result bool) {
-	err := comparePasswordAndHash(pswd, hash)
+	//fmt.Println([]byte(hash))
+	err := CompareHashAndPassword([]byte(hash), []byte(pswd))
 	if err != nil {
-		fmt.Println(err)
+		//fmt.Println(err)
 		return false
 	}
 	return true
@@ -61,9 +63,9 @@ var DefaultParams = &params{
 	keyLength:   32,
 }
 
-func generateFromPassword(password []byte, p *params) ([]byte, error) {
+func GenerateFromPassword(password []byte, p *params) ([]byte, error) {
 	// Generate a cryptographically secure random salt
-	salt, err := generateRandomBytes(p.saltLength)
+	salt, err := GenerateRandomBytes(p.saltLength)
 	if err != nil {
 		return nil, err
 	}
@@ -83,63 +85,72 @@ func generateFromPassword(password []byte, p *params) ([]byte, error) {
 	//return encodedHash, nil
 }
 
-func generateRandomBytes(n uint32) ([]byte, error) {
+// GenerateRandomBytes returns securely generated random bytes.
+// It will return an error if the system's secure random
+// number generator fails to function correctly, in which
+// case the caller should not continue.
+func GenerateRandomBytes(n uint32) ([]byte, error) {
 	b := make([]byte, n)
 	_, err := rand.Read(b)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	return b, nil
 }
 
-func comparePasswordAndHash(password, encodedHash string) (err error) {
-	p, salt, hash, err := decodeHash(encodedHash)
+func CompareHashAndPassword(hash, password []byte) error {
+	p, salt, hash, err := decodeHash(hash)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Printf("%x\n", hash)
 
 	otherHash := argon2.IDKey([]byte(password), salt, p.iterations, p.memory, p.parallelism, p.keyLength)
+	fmt.Printf("%x\n", otherHash)
 
+	// Check that the contents of the hashed passwords are identical. Note
+	// that we are using the subtle.ConstantTimeCompare() function for this
+	// to help prevent timing attacks.
 	if subtle.ConstantTimeCompare(hash, otherHash) != 1 {
-		err = PasswordNotMatch
-		return
+		return PasswordNotMatch
 	}
 	return nil
 }
 
-func decodeHash(encodedHash string) (p *params, salt, hash []byte, err error) {
-	vals := strings.Split(encodedHash, "$")
+func decodeHash(hash []byte) (*params, []byte, []byte, error) {
+	vals := strings.Split(string(hash), "$")
 	if len(vals) != 6 {
 		return nil, nil, nil, ErrInvalidHash
 	}
 
 	var version int
-	_, err = fmt.Sscanf(vals[2], "v=%d", &version)
+	_, err := fmt.Sscanf(vals[2], "v=%d", &version)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 	if version != argon2.Version {
 		return nil, nil, nil, ErrIncompatibleVersion
 	}
+	fmt.Println(version)
 
-	p = &params{}
-	_, err = fmt.Sscanf(vals[3], "m=%d,t=%d,p=%d", &p.memory, &p.iterations, &p.parallelism)
+	Params := &params{}
+	_, err = fmt.Sscanf(vals[3], "m=%d,t=%d,p=%d", &Params.memory, &Params.iterations, &Params.parallelism)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 
-	salt, err = base64.RawStdEncoding.DecodeString(vals[4])
+	salt, err := base64.RawStdEncoding.DecodeString(vals[4])
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	p.saltLength = uint32(len(salt))
+	Params.saltLength = uint32(len(salt))
 
 	hash, err = base64.RawStdEncoding.DecodeString(vals[5])
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	p.keyLength = uint32(len(hash))
+	Params.keyLength = uint32(len(hash))
 
-	return p, salt, hash, nil
+	return Params, salt, hash, nil
 }
