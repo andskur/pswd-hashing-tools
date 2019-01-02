@@ -33,6 +33,9 @@ var Arguments = make(map[string]string, 2)
 var rootCmd = &cobra.Command{
 	Short: "Tools for hashing passwords and compare result with string",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+
+		//TODO need to add validator for "algorithm" command line argument
+
 		switch AlgoFlag {
 		case "argon2":
 			algo = &argon2.Argon2{}
@@ -41,9 +44,11 @@ var rootCmd = &cobra.Command{
 		case "scrypt":
 			algo = &scrypt.Scrypt{}
 		default:
+			fmt.Printf("%q algorithm doesn't supported, swith to default\n", strings.Title(AlgoFlag))
+			AlgoFlag = "bcrypt"
 			algo = &bcrypt.Bcrypt{}
 		}
-		fmt.Printf("Using %s hashing algorithm \n", strings.Title(AlgoFlag))
+		fmt.Printf("Using %q hashing algorithm \n", strings.Title(AlgoFlag))
 	},
 }
 
