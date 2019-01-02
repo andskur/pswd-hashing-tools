@@ -1,6 +1,8 @@
-hash: 19d34c39ead394aa633d570badf0f9c420148a1f0ba7b1cb42b26e7cba0bab1b
-updated: 2019-01-02T01:57:15.317125+03:00
+hash: 67f9419e67ef090ed7423513c7f7cabfdab5a761a52403077631e1f5743d2787
+updated: 2019-01-03T00:30:44.968594+03:00
 imports:
+- name: github.com/andskur/argon2-hashing
+  version: 3ddff630519069b038a8c05f6763768eae06adcc
 - name: github.com/elithrar/simple-scrypt
   version: d150773194090feb6c897805a7bcea8d49544e2c
 - name: github.com/inconshreveable/mousetrap
