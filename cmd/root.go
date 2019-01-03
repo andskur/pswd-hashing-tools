@@ -7,14 +7,10 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms"
-	"github.com/andskur/pswd-hashing-tools/internal/algorithms/argon2"
-	"github.com/andskur/pswd-hashing-tools/internal/algorithms/bcrypt"
-	"github.com/andskur/pswd-hashing-tools/internal/algorithms/scrypt"
 )
 
 // Algorithm flag vars
@@ -38,23 +34,8 @@ var Arguments = make(map[string]string, 2)
 var rootCmd = &cobra.Command{
 	Short: "Tools for hashing passwords and compare result with string",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-
-		//TODO need to add validator for "algorithm" command line flag
-
-		// Get password hashing algorithm from command line flag
-		switch AlgoFlag {
-		case "argon2":
-			algo = &argon2.Argon2{}
-		case "bcrypt":
-			algo = &bcrypt.Bcrypt{}
-		case "scrypt":
-			algo = &scrypt.Scrypt{}
-		default:
-			fmt.Printf("%q algorithm doesn't supported, swith to default\n", strings.Title(AlgoFlag))
-			AlgoFlag = "bcrypt"
-			algo = &bcrypt.Bcrypt{}
-		}
-		fmt.Printf("Using %q hashing algorithm \n", strings.Title(AlgoFlag))
+		// Get password hashing algorithm from command line flag and set algorithm to use
+		algo = algorithms.SetAlgorithm(AlgoFlag)
 	},
 }
 
