@@ -29,9 +29,9 @@ $ ./paswd-hashing-tools -h
 Usage: [COMMAND][ARGUMENT][-FLAGS]
 
 Available Commands:
-  compare   [password] ['hash']   Compare given string with a given hash
-  hash      [password]          Hash given string
-  help                          Help about any command
+  compare   [password] ['hash']     Compare given string with a given hash
+  hash      [password]              Hash given string
+  help                              Help about any command
 
 Password and hash arguments are optional, you can type it in stdin after command execution
 

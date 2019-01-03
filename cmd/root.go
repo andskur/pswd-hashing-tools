@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -46,7 +45,7 @@ func Execute() {
 	rootCmd.PersistentFlags().StringVarP(&AlgoFlag, "algorithm", "a", "bcrypt", "Crypto algorithm to use")
 	rootCmd.PersistentFlags().BoolVarP(&PreHashFlag, "prehash", "p", false, "Enable prehash SHA256 function")
 	if err := rootCmd.Execute(); err != nil {
-		log.Fatal(err)
+		os.Exit(1)
 	}
 }
 
