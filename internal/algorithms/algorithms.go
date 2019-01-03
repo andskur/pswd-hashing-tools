@@ -2,7 +2,9 @@ package algorithms
 
 import (
 	"fmt"
+	"math/rand"
 	"strings"
+	"time"
 
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms/argon2"
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms/bcrypt"
@@ -24,10 +26,10 @@ var (
 )
 
 // SetAlgorithm setting crypto hashing algorithm for interaction from given string
-func SetAlgorithm(algoStr string) (algo Algorithm) {
+func SetAlgorithm(algoStr string) (algo Algorithm, algoName string) {
 	switch algoStr {
 	case "argon2":
-		algo = argon2.Argon2{}
+		algo = &argon2.Argon2{}
 	case "bcrypt":
 		algo = &bcrypt.Bcrypt{}
 	case "scrypt":
@@ -38,17 +40,23 @@ func SetAlgorithm(algoStr string) (algo Algorithm) {
 		algoStr = defaultAlgo
 		algo = &bcrypt.Bcrypt{}
 	}
-	fmt.Printf("Using %q hashing algorithm \n", strings.Title(algoStr))
-	return algo
+	return algo, algoStr
 }
 
 // ValidateAlgorithm check if the given algorithm is currently supported
 func ValidateAlgorithm(check string) bool {
-	fmt.Println(algos)
 	for _, item := range algos {
 		if item == check {
 			return true
 		}
 	}
 	return false
+}
+
+// RandomSupported get random supported crypto hashing algorithm
+func RandomSupported() string {
+	// Initialize global pseudo random generator
+	rand.Seed(time.Now().Unix())
+	// Get random supported algorithm
+	return algos[rand.Intn(len(algos))]
 }
