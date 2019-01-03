@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -30,7 +31,8 @@ var rootCmd = &cobra.Command{
 	Short: "Tools for hashing passwords and compare result with string",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		// Get password hashing algorithm from command line flag and set algorithm to use
-		algo = algorithms.SetAlgorithm(AlgoFlag)
+		algo, AlgoFlag = algorithms.SetAlgorithm(AlgoFlag)
+		fmt.Printf("Using %q hashing algorithm \n", strings.Title(AlgoFlag))
 	},
 }
 
