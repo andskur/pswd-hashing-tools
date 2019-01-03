@@ -38,6 +38,28 @@ var rootCmd = &cobra.Command{
 // Execute root command and binding flags
 func Execute() {
 	rootCmd.PersistentFlags().StringVarP(&AlgoFlag, "algorithm", "a", "bcrypt", "Crypto algorithm to use")
+	rootCmd.SetHelpTemplate(`Tools for hashing passwords and compare result with string
+
+Usage: [COMMAND][ARGUMENT][-FLAGS]
+
+Available Commands:
+  compare   [password] ['hash']     Compare given string with a given hash
+  hash      [password]              Hash given string
+  help                              Help about any command
+
+Password and hash arguments are optional, you can type it in stdin after command execution
+
+Flags:
+  -a, --algorithm string   Crypto algorithm to use (default "bcrypt")
+  -h, --help               help for this command
+  
+Available algorithms:
+  bcrypt
+  scrypt
+  argon2
+
+Use " [command] --help" for more information about a command.`)
+
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}

@@ -35,7 +35,6 @@ Available Commands:
 
 Password and hash arguments are optional, you can type it in stdin after command execution
 
-
 Flags:
   -a, --algorithm string   Crypto algorithm to use (default "bcrypt")
   -h, --help               help for this command
