@@ -15,7 +15,7 @@ func init() {
 // or u can leave argument nil and type password later with stdin
 var hashCmd = &cobra.Command{
 	Use:       "hash [password]",
-	Short:     "Hash given string",
+	Short:     "Create hash from given string",
 	ValidArgs: []string{"password"},
 	Args:      cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

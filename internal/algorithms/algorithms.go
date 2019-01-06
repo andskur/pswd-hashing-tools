@@ -21,7 +21,7 @@ type Algorithm interface {
 }
 
 var (
-	algos       = []string{"bcrypt", "scrypt", "argon2"} // Suppported crypto algorithms
+	Algos       = []string{"bcrypt", "scrypt", "argon2"} // Supported crypto algorithms
 	defaultAlgo = "bcrypt"                               // Default crypto algorithm
 )
 
@@ -45,7 +45,7 @@ func SetAlgorithm(algoStr string) (algo Algorithm, algoName string) {
 
 // ValidateAlgorithm check if the given algorithm is currently supported
 func ValidateAlgorithm(check string) bool {
-	for _, item := range algos {
+	for _, item := range Algos {
 		if item == check {
 			return true
 		}
@@ -58,5 +58,5 @@ func RandomSupported() string {
 	// Initialize global pseudo random generator
 	rand.Seed(time.Now().Unix())
 	// Get random supported algorithm
-	return algos[rand.Intn(len(algos))]
+	return Algos[rand.Intn(len(Algos))]
 }

@@ -22,8 +22,6 @@ var Arguments = make(map[string]string, 2)
 
 //TODO add viper package for bindings command line flags to config
 
-//TODO improve help command with actual documentation
-
 // rootCmd is a root command with general "algorithm" command line flag
 // with which can set execute hashing algorithm
 var rootCmd = &cobra.Command{
@@ -38,27 +36,7 @@ var rootCmd = &cobra.Command{
 // Execute root command and binding flags
 func Execute() {
 	rootCmd.PersistentFlags().StringVarP(&AlgoFlag, "algorithm", "a", "bcrypt", "Crypto algorithm to use")
-	rootCmd.SetHelpTemplate(`Tools for hashing passwords and compare result with string
-
-Usage: [COMMAND][ARGUMENT][-FLAGS]
-
-Available Commands:
-  compare   [password] ['hash']     Compare given string with a given hash
-  hash      [password]              Hash given string
-  help                              Help about any command
-
-Password and hash arguments are optional, you can type it in stdin after command execution
-
-Flags:
-  -a, --algorithm string   Crypto algorithm to use (default "bcrypt")
-  -h, --help               help for this command
-  
-Available algorithms:
-  bcrypt
-  scrypt
-  argon2
-
-Use " [command] --help" for more information about a command.`)
+	rootCmd.SetHelpTemplate(helpTemplate)
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
@@ -78,3 +56,36 @@ func BindArgument(check string, arguments map[string]string, cmd string) (argume
 	}
 	return argument
 }
+
+// Help template for all commands
+var helpTemplate = `Tools for hashing passwords and compare result with string
+
+Usage: {{if .Runnable}}
+  {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
+  {{.CommandPath}} [command] [arguments] [flags]{{end}}{{if gt (len .Aliases) 0}}
+
+Aliases:
+  {{.NameAndAliases}}{{end}}{{if .HasExample}}
+
+Examples:
+{{.Example}}{{end}}{{if .HasAvailableSubCommands}}
+
+Available Commands:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
+  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}
+
+Password and hash arguments are optional, you can type it in stdin after command execution{{end}}
+
+{{if .HasAvailableLocalFlags}}Flags:
+{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasAvailableInheritedFlags}}
+
+Global Flags:
+{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}
+  
+Available algorithms:
+  bcrypt
+  scrypt
+  argon2
+
+Use " [command] --help" for more information about a command.
+
+`
