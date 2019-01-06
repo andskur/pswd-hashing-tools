@@ -26,6 +26,8 @@ $ go build
 ## Usage
 ```
 $ ./paswd-hashing-tools -h
+Tools for hashing passwords and compare result with string
+
 Usage: [COMMAND][ARGUMENT][-FLAGS]
 
 Available Commands:

@@ -58,9 +58,9 @@ func BindArgument(check string, arguments map[string]string, cmd string) (argume
 }
 
 // Help template for all commands
-var helpTemplate = `Tools for hashing passwords and compare result with string
+var helpTemplate = `{{ if .Long}}{{.Long}}{{else }}{{.Short}}{{end}}
 
-Usage: {{if .Runnable}}
+Usage:{{if .Runnable}}
   {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
   {{.CommandPath}} [command] [arguments] [flags]{{end}}{{if gt (len .Aliases) 0}}
 
@@ -71,7 +71,7 @@ Examples:
 {{.Example}}{{end}}{{if .HasAvailableSubCommands}}
 
 Available Commands:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
-  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}
+  {{rpad .UseLine .NamePadding }}  - {{.Short}}{{end}}{{end}}
 
 Password and hash arguments are optional, you can type it in stdin after command execution{{end}}
 
@@ -79,13 +79,11 @@ Password and hash arguments are optional, you can type it in stdin after command
 {{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasAvailableInheritedFlags}}
 
 Global Flags:
-{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}
-  
-Available algorithms:
-  bcrypt
-  scrypt
-  argon2
+{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasHelpSubCommands}}
 
-Use " [command] --help" for more information about a command.
+Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
+  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
+
+Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
 
 `
