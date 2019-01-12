@@ -26,6 +26,8 @@ $ go build
 ## Usage
 ```
 $ ./paswd-hashing-tools -h
+Tools for hashing passwords and compare result with string
+
 Usage: [COMMAND][ARGUMENT][-FLAGS]
 
 Available Commands:
@@ -34,7 +36,6 @@ Available Commands:
   help                              Help about any command
 
 Password and hash arguments are optional, you can type it in stdin after command execution
-
 
 Flags:
   -a, --algorithm string   Crypto algorithm to use (default "bcrypt")

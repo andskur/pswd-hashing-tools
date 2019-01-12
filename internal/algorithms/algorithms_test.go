@@ -40,7 +40,7 @@ func TestRandomSupported(t *testing.T) {
 	if !ValidateAlgorithm(trueAlgo) {
 		t.Errorf("Function validated supported algorithm %q as unsupported", algo)
 	}
-	for _, item := range algos {
+	for _, item := range Algos {
 		if item == algo {
 			return
 		}
