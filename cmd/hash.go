@@ -20,7 +20,7 @@ var hashCmd = &cobra.Command{
 		if len(args) > 0 {
 			Arguments["password"] = args[0]
 		}
-		strToHash(algo, Arguments)
+		strToHash(pswdAlgo, Arguments)
 	},
 }
 

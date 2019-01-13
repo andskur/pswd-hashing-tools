@@ -16,10 +16,10 @@ import (
 // PaswordHasher flag vars
 var (
 	AlgoFlag string
-	algo     algorithms.HashAlgorithm
+	pswdAlgo algorithms.HashAlgorithm
 )
 
-// Prehash flag
+// Prehash flag vars
 var PreHashFlag bool
 
 // Arguments fot interacting with commands
@@ -37,8 +37,8 @@ func Execute(pswdHahsers *algorithms.Algorithms) *cobra.Command {
 
 			// Get password hashing algorithm from command line flag and set algorithm to use
 			pswdHahsers.SetAlgorithm(AlgoFlag)
-			algo = pswdHahsers.Current
-			AlgoFlag = algorithms.GetName(algo)
+			pswdAlgo = pswdHahsers.Current
+			AlgoFlag = algorithms.GetName(pswdAlgo)
 
 			fmt.Printf("Using %q hashing algorithm \n", strings.Title(AlgoFlag))
 		},
@@ -113,5 +113,4 @@ Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
   {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
 
 Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
-
 `
