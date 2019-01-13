@@ -38,14 +38,18 @@ Available Commands:
 Password and hash arguments are optional, you can type it in stdin after command execution
 
 Flags:
-  -a, --algorithm string   Crypto algorithm to use (default "bcrypt")
+  -a, --algorithm string   password hashing crypto algorithm to use (default "bcrypt")
   -h, --help               help for this command
-  -p, --prehash            Enable prehash SHA256 function
+  -p, --prehash            prehash algorithm to use
   
 Available algorithms:
   bcrypt
   scrypt
   argon2
+  
+Available prehash algorithms:
+  SHA2
+  SHA3
 
 Use " [command] --help" for more information about a command.
 ```

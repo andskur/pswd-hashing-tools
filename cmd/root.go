@@ -54,8 +54,8 @@ func Execute(pswdHahsers, hasher *algorithms.Algorithms) *cobra.Command {
 	}
 
 	// Add flags
-	rootCmd.PersistentFlags().StringVarP(&AlgoFlag, "algorithm", "a", "bcrypt", "Crypto algorithm to use")
-	rootCmd.PersistentFlags().StringVarP(&PreHashFlag, "prehash", "p", "", "Enable prehash SHA256 function")
+	rootCmd.PersistentFlags().StringVarP(&AlgoFlag, "algorithm", "a", "bcrypt", "crypto algorithm to use")
+	rootCmd.PersistentFlags().StringVarP(&PreHashFlag, "prehash", "p", "", "prehash algorithm to use")
 
 	// Add help template
 	rootCmd.SetHelpTemplate(helpTemplate)
@@ -107,7 +107,16 @@ Password and hash arguments are optional, you can type it in stdin after command
 {{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasAvailableInheritedFlags}}
 
 Global Flags:
-{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasHelpSubCommands}}
+{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}
+
+Available algorithms:
+  bcrypt
+  scrypt
+  argon2
+  
+Available prehash algorithms:
+  SHA2
+  SHA3{{if .HasHelpSubCommands}}
 
 Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
   {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
