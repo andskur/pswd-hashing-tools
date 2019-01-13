@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms/hash-passwords"
-	"github.com/andskur/pswd-hashing-tools/internal/algorithms/hash/sha2"
 )
 
 // compareCmd can receive password and hash with command line argument
@@ -31,9 +30,9 @@ var compareCmd = &cobra.Command{
 func comparePswdHash(algo hash_passwords.PaswordHasher, args map[string]string) {
 	password := BindArgument("password", args, "compare")
 
-	if PreHashFlag {
-		hasher := &sha2.Sha2{}
-		password = hasher.DoHash(password)
+	if PreHashFlag != "" {
+		fmt.Println("Prehashing password with SHA256...")
+		password = prehashAlgo.DoHash(password)
 	}
 
 	hash := BindArgument("hash", args, "compare")

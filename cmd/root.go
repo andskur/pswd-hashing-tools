@@ -2,25 +2,28 @@ package cmd
 
 import (
 	"bufio"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
+	"github.com/andskur/pswd-hashing-tools/internal/algorithms/hash"
 	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
 
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms"
+	"github.com/andskur/pswd-hashing-tools/internal/algorithms/hash-passwords"
 )
 
 // PaswordHasher flag vars
 var (
 	AlgoFlag string
-	pswdAlgo algorithms.HashAlgorithm
+	pswdAlgo hash_passwords.PaswordHasher
 )
 
 // Prehash flag vars
-var PreHashFlag bool
+var (
+	PreHashFlag string
+	prehashAlgo hash.Hasher
+)
 
 // Arguments fot interacting with commands
 var Arguments = make(map[string]string, 2)
@@ -28,9 +31,9 @@ var Arguments = make(map[string]string, 2)
 //TODO add viper package for bindings command line flags to config
 
 // Execute root command and binding flags
-func Execute(pswdHahsers *algorithms.Algorithms) *cobra.Command {
-	// rootCmd is a root command with general "algorithm" command line flag
-	// with which can set execute hashing algorithm
+func Execute(pswdHahsers, hasher *algorithms.Algorithms) *cobra.Command {
+	// rootCmd is a root command with general "algorithm" and "prehash"
+	// command line flags with which can set execute hashing algorithm
 	var rootCmd = &cobra.Command{
 		Short: "Tools for hashing passwords and compare result with string",
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
@@ -40,13 +43,19 @@ func Execute(pswdHahsers *algorithms.Algorithms) *cobra.Command {
 			pswdAlgo = pswdHahsers.Current
 			AlgoFlag = algorithms.GetName(pswdAlgo)
 
+			if PreHashFlag != "" {
+				hasher.SetAlgorithm(PreHashFlag)
+				prehashAlgo = hasher.Current
+				PreHashFlag = algorithms.GetName(prehashAlgo)
+			}
+
 			fmt.Printf("Using %q hashing algorithm \n", strings.Title(AlgoFlag))
 		},
 	}
 
 	// Add flags
 	rootCmd.PersistentFlags().StringVarP(&AlgoFlag, "algorithm", "a", "bcrypt", "Crypto algorithm to use")
-	rootCmd.PersistentFlags().BoolVarP(&PreHashFlag, "prehash", "p", false, "Enable prehash SHA256 function")
+	rootCmd.PersistentFlags().StringVarP(&PreHashFlag, "prehash", "p", "", "Enable prehash SHA256 function")
 
 	// Add help template
 	rootCmd.SetHelpTemplate(helpTemplate)
@@ -74,15 +83,6 @@ func BindArgument(check string, arguments map[string]string, cmd string) (argume
 		argument, _ = reader.ReadString('\n')
 	}
 	return argument
-}
-
-// Prehash given string with sha256
-func Prehash(string string) (hash string) {
-	fmt.Println("Prehashing password with SHA256...")
-	h := sha256.New()
-	h.Write([]byte(string))
-	sum := h.Sum(nil)
-	return hex.EncodeToString(sum)
 }
 
 // Help template for all commands
