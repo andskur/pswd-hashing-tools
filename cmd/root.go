@@ -13,10 +13,10 @@ import (
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms"
 )
 
-// Algorithm flag vars
+// PaswordHasher flag vars
 var (
 	AlgoFlag string
-	algo     algorithms.Algorithm
+	algo     algorithms.HashAlgorithm
 )
 
 // Prehash flag
@@ -27,26 +27,39 @@ var Arguments = make(map[string]string, 2)
 
 //TODO add viper package for bindings command line flags to config
 
-// rootCmd is a root command with general "algorithm" command line flag
-// with which can set execute hashing algorithm
-var rootCmd = &cobra.Command{
-	Short: "Tools for hashing passwords and compare result with string",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		// Get password hashing algorithm from command line flag and set algorithm to use
-		algo, AlgoFlag = algorithms.SetAlgorithm(AlgoFlag)
-		fmt.Printf("Using %q hashing algorithm \n", strings.Title(AlgoFlag))
-	},
-}
-
 // Execute root command and binding flags
-func Execute() {
+func Execute(pswdHahsers *algorithms.Algorithms) *cobra.Command {
+	// rootCmd is a root command with general "algorithm" command line flag
+	// with which can set execute hashing algorithm
+	var rootCmd = &cobra.Command{
+		Short: "Tools for hashing passwords and compare result with string",
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+
+			// Get password hashing algorithm from command line flag and set algorithm to use
+			pswdHahsers.SetAlgorithm(AlgoFlag)
+			algo = pswdHahsers.Current
+			AlgoFlag = algorithms.GetName(algo)
+
+			fmt.Printf("Using %q hashing algorithm \n", strings.Title(AlgoFlag))
+		},
+	}
+
+	// Add flags
 	rootCmd.PersistentFlags().StringVarP(&AlgoFlag, "algorithm", "a", "bcrypt", "Crypto algorithm to use")
 	rootCmd.PersistentFlags().BoolVarP(&PreHashFlag, "prehash", "p", false, "Enable prehash SHA256 function")
+
+	// Add help template
 	rootCmd.SetHelpTemplate(helpTemplate)
+
+	// Add commands
+	rootCmd.AddCommand(hashCmd)
+	rootCmd.AddCommand(compareCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
+
+	return rootCmd
 }
 
 // BindArgument binding argument dor use in next command iteration
