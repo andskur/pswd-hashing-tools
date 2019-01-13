@@ -3,18 +3,26 @@ package cmd
 import (
 	"bufio"
 	"fmt"
+	"github.com/andskur/pswd-hashing-tools/internal/algorithms/hash"
 	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
 
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms"
+	"github.com/andskur/pswd-hashing-tools/internal/algorithms/hash-passwords"
 )
 
-// Algorithm flag vars
+// PaswordHasher flag vars
 var (
 	AlgoFlag string
-	algo     algorithms.Algorithm
+	pswdAlgo hash_passwords.PaswordHasher
+)
+
+// Prehash flag vars
+var (
+	PreHashFlag string
+	prehashAlgo hash.Hasher
 )
 
 // Arguments fot interacting with commands
@@ -22,25 +30,45 @@ var Arguments = make(map[string]string, 2)
 
 //TODO add viper package for bindings command line flags to config
 
-// rootCmd is a root command with general "algorithm" command line flag
-// with which can set execute hashing algorithm
-var rootCmd = &cobra.Command{
-	Short: "Tools for hashing passwords and compare result with string",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		// Get password hashing algorithm from command line flag and set algorithm to use
-		algo, AlgoFlag = algorithms.SetAlgorithm(AlgoFlag)
-		fmt.Printf("Using %q hashing algorithm \n", strings.Title(AlgoFlag))
-	},
-}
-
 // Execute root command and binding flags
-func Execute() {
+func Execute(pswdHahsers, hasher *algorithms.Algorithms) *cobra.Command {
+	// rootCmd is a root command with general "algorithm" and "prehash"
+	// command line flags with which can set execute hashing algorithm
+	var rootCmd = &cobra.Command{
+		Short: "Tools for hashing passwords and compare result with string",
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+
+			// Get password hashing algorithm from command line flag and set algorithm to use
+			pswdHahsers.SetAlgorithm(AlgoFlag)
+			pswdAlgo = pswdHahsers.Current
+			AlgoFlag = algorithms.GetName(pswdAlgo)
+
+			if PreHashFlag != "" {
+				hasher.SetAlgorithm(PreHashFlag)
+				prehashAlgo = hasher.Current
+				PreHashFlag = algorithms.GetName(prehashAlgo)
+			}
+
+			fmt.Printf("Using %q hashing algorithm \n", strings.Title(AlgoFlag))
+		},
+	}
+
+	// Add flags
 	rootCmd.PersistentFlags().StringVarP(&AlgoFlag, "algorithm", "a", "bcrypt", "Crypto algorithm to use")
+	rootCmd.PersistentFlags().StringVarP(&PreHashFlag, "prehash", "p", "", "Enable prehash SHA256 function")
+
+	// Add help template
 	rootCmd.SetHelpTemplate(helpTemplate)
+
+	// Add commands
+	rootCmd.AddCommand(hashCmd)
+	rootCmd.AddCommand(compareCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
+
+	return rootCmd
 }
 
 // BindArgument binding argument dor use in next command iteration
@@ -85,5 +113,4 @@ Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
   {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
 
 Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
-
 `

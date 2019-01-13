@@ -1,47 +1,56 @@
 package algorithms
 
 import (
-	"reflect"
-	"strings"
 	"testing"
+
+	"github.com/andskur/pswd-hashing-tools/internal/algorithms/hash-passwords/argon2"
+	"github.com/andskur/pswd-hashing-tools/internal/algorithms/hash-passwords/bcrypt"
+	"github.com/andskur/pswd-hashing-tools/internal/algorithms/hash-passwords/scrypt"
 )
 
 var (
-	falseAlgo = "bestalgo"
-	trueAlgo  = RandomSupported()
+	testAlgos = Algorithms{
+		Supported: map[string]HashAlgorithm{
+			"bcrypt": &bcrypt.Bcrypt{},
+			"scrypt": &scrypt.Scrypt{},
+			"argon2": &argon2.Argon2{},
+		},
+		Default: "bcrypt",
+	}
+
+	trueAlgo  = testAlgos.RandomSupported()
+	falseArgo = "damnhasher"
 )
 
 func TestSetAlgorithm(t *testing.T) {
 	// Set algorithm type from name
-	setAlgo, _ := SetAlgorithm(trueAlgo)
+	testAlgos.SetAlgorithm(trueAlgo)
 
 	// Get name of received algorithm type
-	algoType := reflect.TypeOf(setAlgo).String()
-	output := strings.Split(algoType, ".")
-	algoName := strings.ToLower(output[1])
+	algoName := GetName(testAlgos.Current)
 
 	// Validate algo name
-	if !ValidateAlgorithm(algoName) {
+	if !testAlgos.ValidateAlgorithm(algoName) {
 		t.Errorf("Given algorithm name %q is not valid", trueAlgo)
 	}
 }
 
-func TestValidateAlgorithm(t *testing.T) {
-	if !ValidateAlgorithm(trueAlgo) {
+func TestAlgorithms_ValidateAlgorithm(t *testing.T) {
+	if !testAlgos.ValidateAlgorithm(trueAlgo) {
 		t.Errorf("Function validated supported algorithm %q as unsupported", trueAlgo)
 	}
-	if ValidateAlgorithm(falseAlgo) {
-		t.Errorf("Function validated unsupported algorithm %q as supported", falseAlgo)
+	if testAlgos.ValidateAlgorithm(falseArgo) {
+		t.Errorf("Function validated unsupported algorithm %q as supported", falseArgo)
 	}
 }
 
 func TestRandomSupported(t *testing.T) {
-	algo := RandomSupported()
-	if !ValidateAlgorithm(trueAlgo) {
+	algo := testAlgos.RandomSupported()
+	if !testAlgos.ValidateAlgorithm(trueAlgo) {
 		t.Errorf("Function validated supported algorithm %q as unsupported", algo)
 	}
-	for _, item := range Algos {
-		if item == algo {
+	for keys := range testAlgos.Supported {
+		if keys == algo {
 			return
 		}
 	}
