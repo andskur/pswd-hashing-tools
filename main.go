@@ -10,26 +10,38 @@ import (
 	"github.com/andskur/pswd-hashing-tools/internal/algorithms/hash/sha3"
 )
 
-//TODO resolve interface problem
+//TODO add viper package for configuration
 
 // App entry point
 func main() {
-	pswdHashingAlgos := &algorithms.Algorithms{
-		Supported: map[string]algorithms.HashAlgorithm{
-			"bcrypt": &bcrypt.Bcrypt{},
-			"scrypt": &scrypt.Scrypt{},
-			"argon2": &argon2.Argon2{},
-		},
-		Default: "bcrypt",
-	}
+	app := initApp()
 
-	hashingAlgos := &algorithms.Algorithms{
-		Supported: map[string]algorithms.HashAlgorithm{
-			"sha2": &sha2.Sha2{},
-			"sha3": &sha3.Sha3{},
-		},
-		Default: "sha2",
-	}
+	cmd.Execute(app.PswdHashingAlgos, app.PswdHashingAlgos)
+}
 
-	cmd.Execute(pswdHashingAlgos, hashingAlgos)
+// Application structure implement application common parameters
+type Application struct {
+	HashingAlgos     *algorithms.Algorithms
+	PswdHashingAlgos *algorithms.Algorithms
+}
+
+// Init Application parameters
+func initApp() Application {
+	return Application{
+		PswdHashingAlgos: &algorithms.Algorithms{
+			Supported: map[string]algorithms.HashAlgorithm{
+				"bcrypt": &bcrypt.Bcrypt{},
+				"scrypt": &scrypt.Scrypt{},
+				"argon2": &argon2.Argon2{},
+			},
+			Default: "bcrypt",
+		},
+		HashingAlgos: &algorithms.Algorithms{
+			Supported: map[string]algorithms.HashAlgorithm{
+				"sha2": &sha2.Sha2{},
+				"sha3": &sha3.Sha3{},
+			},
+			Default: "sha2",
+		},
+	}
 }

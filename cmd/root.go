@@ -3,7 +3,6 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"github.com/andskur/pswd-hashing-tools/internal/algorithms/hash"
 	"os"
 	"strings"
 
@@ -22,13 +21,11 @@ var (
 // Prehash flag vars
 var (
 	PreHashFlag string
-	prehashAlgo hash.Hasher
+	prehashAlgo algorithms.HashAlgorithm
 )
 
 // Arguments fot interacting with commands
 var Arguments = make(map[string]string, 2)
-
-//TODO add viper package for bindings command line flags to config
 
 // Execute root command and binding flags
 func Execute(pswdHahsers, hasher *algorithms.Algorithms) *cobra.Command {

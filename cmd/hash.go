@@ -2,10 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/andskur/pswd-hashing-tools/internal/algorithms/hash-passwords"
 	"strings"
 
 	"github.com/spf13/cobra"
+
+	"github.com/andskur/pswd-hashing-tools/internal/algorithms/hash-passwords"
 )
 
 // hashCmd can receive password to hash with command line argument
@@ -31,7 +32,6 @@ func strToHash(algo hash_passwords.PaswordHasher, args map[string]string) {
 		fmt.Printf("Prehashing password with %q...\n", strings.ToUpper(PreHashFlag))
 		password = prehashAlgo.DoHash(password)
 		fmt.Println("Prehash:", password)
-
 	}
 
 	hash := algo.DoHash(password)
